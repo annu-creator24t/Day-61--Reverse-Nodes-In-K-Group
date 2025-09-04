@@ -10,46 +10,36 @@
  */
 
 class Solution {
-    public ListNode reverseKGroup(ListNode head, int k) {
-        if (head == null || k == 1) return head;
+   Node* getKthNode(Node* temp, int k) {
+    k -= 1;
+    while (temp != NULL && k > 0) {
+        k--;
+        temp = temp->next;
+    }
+    return temp;
+}
 
-        // Dummy node initialization
-        ListNode dummy = new ListNode(0);
-        dummy.next = head;
-
-        ListNode groupPrev = dummy;
-
-        while (true) {
-            // Find the kth node
-            ListNode kth = getKth(groupPrev, k);
-            if (kth == null) break;
-            ListNode groupNext = kth.next;
-
-            // Reverse group
-            ListNode prev = groupNext;
-            ListNode curr = groupPrev.next;
-
-            while (curr != groupNext) {
-                ListNode temp = curr.next;
-                curr.next = prev;
-                prev = curr;
-                curr = temp;
-            }
-
-            ListNode temp = groupPrev.next;
-            groupPrev.next = kth;
-            groupPrev = temp;
+Node* kReverse(Node* head, int k) {
+    Node* temp = head;
+    Node* prevLast = NULL;
+    while (temp != NULL) {
+        Node* kThNode = getKthNode(temp, k);
+        if (kThNode == NULL) {
+            if (prevLast) prevLast->next = temp;
+            break;
         }
 
-        return dummy.next;
-    }
-
-    // Helper method to get the kth node from the current node
-    private ListNode getKth(ListNode curr, int k) {
-        while (curr != null && k > 0) {
-            curr = curr.next;
-            k--;
+        Node* nextNode = kThNode->next;
+        kThNode->next = NULL;
+        reverseLinkedList(temp);
+        if (temp == head) {
+            head = kThNode;
+        } else {
+            prevLast->next = kThNode;
         }
-        return curr;
+
+        prevLast = temp;
+        temp = nextNode;
     }
+    return head;
 }
